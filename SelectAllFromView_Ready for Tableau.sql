@@ -1,0 +1,1 @@
+SELECT * FROM legos.unique_sets;
