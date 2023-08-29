@@ -1,0 +1,26 @@
+HackerRank SQL practice
+
+--https://www.hackerrank.com/challenges/occupations/problem
+
+Pivot the Occupation column in the Occupations TABLE so that each Name is sorted alphabetically and displayed underneath its corresponding Occupation. The output column headers should be Doctor, Professor, Singer, and Actor, respectively.
+
+Note: Print NULL when there are no more names corresponding to an occupation.
+
+Occupation will only contain one of the following values: Doctor, Professor, Singer or Actor.
+
+MSSQL Server Query example for pivot below:
+
+select Doctor, Professor, Singer, Actor
+from (
+    select 
+        Occupation,
+        Name,
+        row_number() over (partition by Occupation order by Name) as rown
+    from Occupations
+) as SourceTable
+pivot
+(
+    max(name)
+    for Occupation IN (Doctor, Professor, Singer, Actor)
+) as pvt
+order by rown
