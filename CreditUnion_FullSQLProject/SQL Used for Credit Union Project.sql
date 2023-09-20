@@ -94,3 +94,60 @@ LEFT JOIN AccountBalanceSummary ALS ON M.name = ALS.member_name;
 
 -- Query the view for data visualization
 SELECT * FROM CreditUnionData;
+
+
+-- Afterward, updating all records:
+-- Update Account Type and Total Balance in creditunion.Accounts for member_id 3 onward
+UPDATE creditunion.Accounts AS A
+JOIN creditunion.Members AS M ON A.member_id = M.member_id
+SET
+    A.account_type = CASE WHEN RAND() < 0.5 THEN 'Savings' ELSE 'Checking' END,
+    A.balance = ROUND(RAND() * 10000, 2)
+WHERE A.member_id >= 3;
+
+-- Update Loan Type and Total Loan Amount in creditunion.Loans for member_id 3 onward
+UPDATE creditunion.Loans AS L
+JOIN creditunion.Members AS M ON L.member_id = M.member_id
+SET
+    L.loan_type = CASE WHEN RAND() < 0.5 THEN 'Personal' ELSE 'Mortgage' END,
+    L.loan_amount = ROUND(RAND() * 5000, 2)
+WHERE L.member_id >= 3;
+
+-- Insert data into creditunion.Accounts for member_id > 3
+INSERT INTO creditunion.Accounts (member_id, balance, account_type)
+SELECT
+    M.member_id,
+    ROUND(RAND() * 10000, 2),
+    CASE WHEN RAND() < 0.5 THEN 'Savings' ELSE 'Checking' END
+FROM creditunion.Members M
+WHERE M.member_id > 3;
+
+-- Update Account Type and Total Balance in creditunion.Accounts for rows 3 through 3812 with random values
+UPDATE creditunion.Accounts
+SET
+    account_type = CASE WHEN RAND() < 0.5 THEN 'Savings' ELSE 'Checking' END,
+    balance = ROUND(RAND() * 10000, 2)
+WHERE account_type IS NULL AND balance IS NULL AND member_id BETWEEN 3 AND 3812;
+
+-- Update Loan Type and Total Loan Amount in creditunion.Loans for rows 3 through 3812 with random values
+UPDATE creditunion.Loans
+SET
+    loan_type = CASE WHEN RAND() < 0.5 THEN 'Personal' ELSE 'Mortgage' END,
+    loan_amount = ROUND(RAND() * 5000, 2)
+WHERE loan_type IS NULL AND loan_amount IS NULL AND member_id BETWEEN 3 AND 3812;
+
+-- Alter the creditunion.Accounts table to allow for auto-increment on account_id
+ALTER TABLE creditunion.Accounts MODIFY account_id INT AUTO_INCREMENT;
+
+-- Alter the creditunion.Loans table to allow for auto-increment on loan_id
+ALTER TABLE creditunion.Loans MODIFY loan_id INT AUTO_INCREMENT;
+
+-- Insert data into creditunion.Loans for member_id > 3
+INSERT INTO creditunion.Loans (member_id, loan_amount, loan_type)
+SELECT
+    M.member_id,
+    ROUND(RAND() * 5000, 2),
+    CASE WHEN RAND() < 0.5 THEN 'Personal' ELSE 'Mortgage' END
+FROM creditunion.Members M
+WHERE M.member_id > 3;
+
